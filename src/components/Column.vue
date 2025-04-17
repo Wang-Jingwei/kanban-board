@@ -9,7 +9,7 @@
           class="edit-column-title"
           @keyup.enter="saveTitle"
           @blur="saveTitle"
-          ref="titleInput"
+          :ref="el => setTitleInputRef(el)"
           @keyup.esc="cancelEditing"
         />
       </div>
@@ -72,12 +72,16 @@ export default {
       editingTitle: '',
       editingCardId: null,
       editingCardTitle: '',
-      cardTitleInputElement: null
+      cardTitleInputElement: null,
+      titleInputElement: null
     }
   },
   methods: {
     setCardTitleInputRef(el) {
       this.cardTitleInputElement = el;
+    },
+    setTitleInputRef(el) {
+      this.titleInputElement = el;
     },
     addCard() {
       if (!this.newCardTitle.trim()) return;
@@ -89,8 +93,10 @@ export default {
       this.isEditingTitle = true;
       this.editingTitle = this.column.title;
       this.$nextTick(() => {
-        if (this.$refs.titleInput) {
-          this.$refs.titleInput.focus();
+        if (this.titleInputElement) {
+          if (typeof this.titleInputElement.focus === 'function') {
+            this.titleInputElement.focus();
+          }
         }
       });
     },
