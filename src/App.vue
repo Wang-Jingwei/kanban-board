@@ -1,9 +1,9 @@
 <template>
-  <div class="app">
+  <div class="flex flex-col h-screen overflow-hidden">
     <AppHeader />
-    <div class="app-content">
+    <div class="flex flex-1 overflow-hidden">
       <BoardSidebar />
-      <main class="main-content">
+      <main class="flex-1 overflow-hidden p-5 flex flex-col">
         <BoardView v-if="currentBoard" />
         <EmptyState v-else />
       </main>
@@ -44,27 +44,7 @@ body, html {
   padding: 0;
   height: 100%;
   overflow: hidden;
-  font-family: Arial, sans-serif;
-}
-
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.app-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.main-content {
-  flex: 1;
-  overflow: hidden;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.5;
 }
 </style>

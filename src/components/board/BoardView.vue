@@ -1,5 +1,5 @@
 <template>
-  <div class="board-container">
+  <div class="flex-1 overflow-hidden flex flex-col">
     <KanbanBoard 
       :board="currentBoard" 
       @add-column="addColumn"
@@ -70,13 +70,4 @@ export default {
     };
   }
 }
-</script>
-
-<style scoped>
-.board-container {
-  flex: 1;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-</style> 
+</script> 

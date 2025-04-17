@@ -1,5 +1,5 @@
 <template>
-  <div class="empty-state">
+  <div class="flex justify-center items-center h-full text-gray-500 text-lg text-center">
     <p>Please choose a board or create a new board.</p>
   </div>
 </template>
@@ -8,16 +8,4 @@
 export default {
   name: 'EmptyState'
 }
-</script>
-
-<style scoped>
-.empty-state {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  color: #777;
-  font-size: 1.1rem;
-  text-align: center;
-}
-</style> 
+</script> 

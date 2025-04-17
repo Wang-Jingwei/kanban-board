@@ -1,58 +1,62 @@
 <template>
-  <aside class="sidebar">
-    <div class="board-list-container">
+  <aside class="w-64 bg-gray-100 border-r border-gray-200 overflow-y-auto p-4 flex-shrink-0">
+    <div class="flex flex-col h-full">
       <!-- Create new board -->
-      <div class="add-board">
+      <div class="mb-4 flex flex-col gap-2">
         <input 
           v-model="newBoardTitle" 
           placeholder="Enter board name" 
+          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           @keyup.enter="createBoard"
         />
-        <button @click="createBoard">Add</button>
+        <button 
+          @click="createBoard"
+          class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+        >Add</button>
       </div>
       
       <!-- Board list -->
-      <div v-if="!loading" class="boards-nav">
+      <div v-if="!loading" class="flex flex-col gap-1">
         <div 
           v-for="board in boards" 
           :key="board.id" 
-          class="board-nav-item"
-          :class="{ active: currentBoardId === board.id }"
+          class="flex justify-between items-center p-2.5 rounded-md cursor-pointer transition-colors group"
+          :class="{ 'bg-gray-300 font-semibold': currentBoardId === board.id, 'hover:bg-gray-200': currentBoardId !== board.id }"
         >
-          <div class="board-nav-content" @click="selectBoard(board.id)">
-            <span v-if="editingBoardId !== board.id" class="board-title">{{ board.title }}</span>
+          <div class="flex-1 overflow-hidden" @click="selectBoard(board.id)">
+            <span v-if="editingBoardId !== board.id" class="block truncate">{{ board.title }}</span>
             <input 
               v-else
               v-model="editingBoardTitle" 
-              class="edit-board-input"
+              class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               @keyup.enter="saveEditingBoard"
               @blur="saveEditingBoard"
               :ref="setInputRef"
               @keyup.esc="cancelEditingBoard"
             />
           </div>
-          <div class="board-actions">
+          <div class="flex opacity-0 group-hover:opacity-100 transition-opacity">
             <button 
-              class="edit-board" 
+              class="bg-transparent border-none text-gray-500 hover:text-blue-500 px-1.5"
               @click.stop="startEditingBoard(board)"
               title="Edit board"
             >✎</button>
             <button 
-              class="delete-board" 
+              class="bg-transparent border-none text-gray-500 hover:text-red-500 px-1.5"
               @click.stop="handleDeleteBoard(board.id)"
               title="Delete board"
             >×</button>
           </div>
         </div>
-        <div v-if="boards.length === 0" class="no-boards">
+        <div v-if="boards.length === 0" class="py-3 text-center text-gray-500 italic">
           No boards. Please create a new board.
         </div>
       </div>
-      <div v-else class="loading">
+      <div v-else class="py-4 text-center text-gray-500">
         Loading...
       </div>
       
-      <div v-if="error" class="error-message">
+      <div v-if="error" class="p-3 mt-3 bg-red-100 text-red-800 rounded-md text-sm">
         {{ error }}
       </div>
     </div>
@@ -157,137 +161,4 @@ export default {
     };
   }
 }
-</script>
-
-<style scoped>
-.sidebar {
-  width: 250px;
-  background-color: #f5f5f5;
-  border-right: 1px solid #e0e0e0;
-  overflow-y: auto;
-  padding: 15px;
-  flex-shrink: 0;
-}
-
-.board-list-container h2 {
-  margin-top: 0;
-  font-size: 1.2rem;
-}
-
-.add-board {
-  margin: 15px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.add-board input {
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.add-board button {
-  padding: 8px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.boards-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.board-nav-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.board-nav-content {
-  flex: 1;
-  overflow: hidden;
-}
-
-.board-title {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.edit-board-input {
-  width: 100%;
-  padding: 4px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-}
-
-.board-nav-item:hover {
-  background-color: #e9e9e9;
-}
-
-.board-nav-item.active {
-  background-color: #e0e0e0;
-  font-weight: bold;
-}
-
-.board-actions {
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.board-nav-item:hover .board-actions {
-  opacity: 1;
-}
-
-.edit-board,
-.delete-board {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: #999;
-  padding: 0 5px;
-}
-
-.edit-board:hover {
-  color: #4285f4;
-}
-
-.delete-board:hover {
-  color: #e53935;
-}
-
-.loading {
-  padding: 15px;
-  text-align: center;
-  color: #777;
-}
-
-.error-message {
-  padding: 10px;
-  margin-top: 10px;
-  background-color: #ffebee;
-  color: #b71c1c;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.no-boards {
-  padding: 10px;
-  color: #777;
-  text-align: center;
-  font-style: italic;
-}
-</style> 
+</script> 

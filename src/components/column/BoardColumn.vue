@@ -1,36 +1,36 @@
 <template>
-  <div class="column-container">
-    <div class="column-header">
-      <div class="column-title">
-        <span v-if="!isEditingTitle" class="column-title-text">{{ column.title }}</span>
+  <div class="bg-gray-50 rounded-lg shadow-sm p-4 flex flex-col h-auto max-h-[calc(100vh-180px)]">
+    <div class="flex justify-between items-center pb-3 border-b border-gray-200 mb-3 flex-shrink-0 group">
+      <div class="font-medium text-gray-700 flex-1 overflow-hidden">
+        <span v-if="!isEditingTitle" class="block truncate">{{ column.title }}</span>
         <input 
           v-else
           v-model="editingTitle" 
-          class="edit-column-title"
+          class="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           @keyup.enter="saveTitle"
           @blur="saveTitle"
           ref="titleInputRef"
           @keyup.esc="cancelEditing"
         />
       </div>
-      <div class="column-actions">
-        <button class="edit-btn" @click="startEditing" title="Edit column">✎</button>
-        <button class="delete-btn" @click="emit('delete-column', column.id)">×</button>
+      <div class="flex opacity-0 group-hover:opacity-100 transition-opacity">
+        <button class="bg-transparent border-none text-gray-500 hover:text-blue-500 px-1.5" @click="startEditing" title="Edit column">✎</button>
+        <button class="bg-transparent border-none text-gray-500 hover:text-red-500 px-1.5" @click="emit('delete-column', column.id)">×</button>
       </div>
     </div>
     
-    <div class="cards">
+    <div class="flex-1 overflow-y-auto mb-3 min-h-0 flex flex-col gap-2">
       <div 
         v-for="card in column.cards" 
         :key="card.id" 
-        class="card"
+        class="bg-white p-3 rounded-lg shadow-sm mb-2 flex justify-between items-center group"
       >
-        <div class="card-content">
-          <pre v-if="editingCardId !== card.id" class="card-text">{{ card.title }}</pre>
+        <div class="flex-1 overflow-hidden break-words">
+          <pre v-if="editingCardId !== card.id" class="m-0 whitespace-pre-wrap font-sans break-words overflow-hidden max-h-[100px] line-clamp-5">{{ card.title }}</pre>
           <textarea 
             v-else
             v-model="editingCardTitle" 
-            class="edit-card-title"
+            class="w-full px-2 py-1 text-sm border border-gray-300 rounded resize-vertical min-h-[60px] focus:outline-none focus:ring-2 focus:ring-blue-500"
             @keydown.ctrl.enter="saveCardTitle"
             @blur="saveCardTitle"
             :ref="el => { if (card.id === editingCardId) cardTitleInputRef = el }"
@@ -38,24 +38,26 @@
             rows="3"
           ></textarea>
         </div>
-        <div class="card-actions">
-          <button class="edit-card" @click="startEditingCard(card)" title="Edit card">✎</button>
-          <button class="delete-card" @click="emit('delete-card', column.id, card.id)">×</button>
+        <div class="flex opacity-0 group-hover:opacity-100 transition-opacity">
+          <button class="bg-transparent border-none text-gray-400 hover:text-blue-500 px-1.5" @click="startEditingCard(card)" title="Edit card">✎</button>
+          <button class="bg-transparent border-none text-gray-400 hover:text-red-500 px-1.5" @click="emit('delete-card', column.id, card.id)">×</button>
         </div>
       </div>
     </div>
     
     <!-- Add new card -->
-    <div class="add-card">
-      <textarea 
-        v-model="newCardTitle" 
-        placeholder="Enter card content" 
-        @keydown.ctrl.enter="addCard"
-        rows="3"
-        class="new-card-textarea"
-      ></textarea>
-      <small class="hint">Press Ctrl+Enter to save or use the Add button</small>
-      <button @click="addCard">Add</button>
+    <div class="flex flex-col gap-2 mt-2">
+      <div class="relative">
+        <textarea 
+          v-model="newCardTitle" 
+          placeholder="Enter card content" 
+          @keydown.ctrl.enter="addCard"
+          rows="3"
+          class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md resize-vertical min-h-[60px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+        ></textarea>
+        <small class="text-[10px] text-gray-500 absolute bottom-1 right-3">Press Ctrl+Enter to save</small>
+      </div>
+      <button @click="addCard" class="px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">Add</button>
     </div>
   </div>
 </template>
@@ -153,178 +155,4 @@ const saveCardTitle = () => {
 const cancelEditingCard = () => {
   editingCardId.value = null;
 };
-</script>
-
-<style>
-.column-container {
-  background-color: #f5f5f5;
-  border-radius: 4px;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  height: auto;
-  max-height: calc(100vh - 180px);
-}
-
-.column-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-}
-
-.column-header:hover .column-actions {
-  opacity: 1;
-}
-
-.column-title {
-  font-weight: bold;
-  font-size: 1rem;
-  flex: 1;
-  overflow: hidden;
-}
-
-.column-title-text {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.edit-column-title,
-.edit-card-title,
-.new-card-textarea {
-  width: 100%;
-  padding: 4px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  resize: vertical;
-  min-height: 60px;
-}
-
-.column-actions {
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.edit-btn,
-.delete-btn {
-  background: none;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  color: #999;
-  padding: 0 5px;
-}
-
-.edit-btn:hover {
-  color: #4285f4;
-}
-
-.delete-btn:hover {
-  color: #e53935;
-}
-
-.cards {
-  flex: 1;
-  overflow-y: auto; 
-  margin-bottom: 10px;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.card {
-  background-color: white;
-  padding: 10px;
-  border-radius: 3px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-content {
-  flex: 1;
-  overflow: hidden;
-  word-break: break-word;
-  white-space: pre-wrap;
-}
-
-.card-actions {
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.card:hover .card-actions {
-  opacity: 1;
-}
-
-.edit-card,
-.delete-card {
-  background: none;
-  border: none;
-  font-size: 14px;
-  cursor: pointer;
-  color: #ccc;
-  padding: 0 5px;
-}
-
-.edit-card:hover {
-  color: #4285f4;
-}
-
-.delete-card:hover {
-  color: #e53935;
-}
-
-.add-card {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.add-card button {
-  padding: 8px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.add-card .new-card-textarea,
-.edit-card-title {
-  margin-bottom: 8px;
-}
-
-.hint {
-  font-size: 11px;
-  color: #666;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.card-text {
-  margin: 0;
-  white-space: pre-wrap;
-  font-family: inherit;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  font-size: inherit;
-  background: none;
-  overflow: hidden;
-  max-height: 100px;
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-}
-</style> 
+</script> 
