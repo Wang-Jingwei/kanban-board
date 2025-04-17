@@ -8,12 +8,14 @@
       >
         <BoardColumn 
           :column="column" 
-          @add-card="(columnId, cardTitle) => $emit('add-card', board.id, columnId, cardTitle)"
-          @delete-column="(columnId) => $emit('delete-column', board.id, columnId)"
-          @update-column="(column) => $emit('update-column', board.id, column)"
-          @delete-card="(columnId, cardId) => $emit('delete-card', board.id, columnId, cardId)"
-          @edit-column="(columnId, newTitle) => $emit('edit-column', board.id, columnId, newTitle)"
-          @edit-card="(columnId, cardId, newTitle) => $emit('edit-card', board.id, columnId, cardId, newTitle)"
+          @add-card="(columnId, cardTitle) => emit('add-card', board.id, columnId, cardTitle)"
+          @delete-column="(columnId) => emit('delete-column', board.id, columnId)"
+          @update-column="(column) => emit('update-column', board.id, column)"
+          @delete-card="(columnId, cardId) => emit('delete-card', board.id, columnId, cardId)"
+          @edit-column="(columnId, newTitle) => emit('edit-column', board.id, columnId, newTitle)"
+          @edit-card="(columnId, cardId, newTitle) => { 
+            emit('edit-card', board.id, columnId, cardId, newTitle);
+          }"
         />
       </div>
       
@@ -30,34 +32,40 @@
   </div>
 </template>
 
-<script>
-import BoardColumn from './Column.vue';
+<script setup>
+/* eslint-disable no-undef */
+import { ref } from 'vue';
+import BoardColumn from '../column/BoardColumn.vue';
 
-export default {
-  name: 'KanbanBoard',
-  components: {
-    BoardColumn
-  },
-  props: {
-    board: {
-      type: Object,
-      required: true
-    }
-  },
-  data() {
-    return {
-      newColumnTitle: ''
-    }
-  },
-  methods: {
-    addColumn() {
-      if (!this.newColumnTitle.trim()) return;
-      
-      this.$emit('add-column', this.board.id, this.newColumnTitle);
-      this.newColumnTitle = '';
-    }
+// Props
+const props = defineProps({
+  board: {
+    type: Object,
+    required: true
   }
-}
+});
+
+// Emits
+const emit = defineEmits([
+  'add-column', 
+  'delete-column', 
+  'update-column', 
+  'delete-card', 
+  'edit-column', 
+  'edit-card',
+  'add-card'
+]);
+
+// State
+const newColumnTitle = ref('');
+
+// Methods
+const addColumn = () => {
+  if (!newColumnTitle.value.trim()) return;
+  
+  emit('add-column', props.board.id, newColumnTitle.value);
+  newColumnTitle.value = '';
+};
 </script>
 
 <style>
@@ -105,6 +113,8 @@ export default {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .add-column button {
